@@ -31,7 +31,6 @@ class UserOut(BaseSchema):
     followers_count: int
     following_count: int
     is_following: bool | None = None
-    profile_image_url: str | None
 
 
 class Token(BaseSchema):

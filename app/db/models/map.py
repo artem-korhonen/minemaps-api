@@ -14,12 +14,18 @@ class Map(Base):
     description: Mapped[str] = mapped_column(String(4096), nullable=False)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
 
-    is_published: Mapped[bool] = mapped_column(server_default=text("false")) # creator
-    is_visible: Mapped[bool] = mapped_column(server_default=text("true")) #admin
+    is_published: Mapped[bool] = mapped_column(server_default=text("false"))  # creator
+    is_visible: Mapped[bool] = mapped_column(server_default=text("true"))  # admin
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now())
-    deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), server_onupdate=func.now()
+    )
+    deleted_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
 
 class FavouriteMap(Base):
@@ -28,7 +34,9 @@ class FavouriteMap(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     map_id: Mapped[int] = mapped_column(ForeignKey("maps.id"), primary_key=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
 
 Map.favourites_count = column_property(
