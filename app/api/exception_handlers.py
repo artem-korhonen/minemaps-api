@@ -8,6 +8,7 @@ from app.errors.user import (
     FollowUserConflictError,
     FollowUserError,
     InvalidCredentialsError,
+    ProfileImageUpdateError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
@@ -15,6 +16,7 @@ from app.errors.storage import (
     ConvertImageError,
     FileTooLargeError,
     IncorrectFileError,
+    StorageDeleteError,
     StorageUploadError,
     StorageNotConnectedError,
 )
@@ -38,6 +40,8 @@ def register_exception_handlers(app: FastAPI):
     app.add_exception_handler(IncorrectFileError, incorrect_file_handler)
     app.add_exception_handler(StorageUploadError, storage_handler)
     app.add_exception_handler(StorageNotConnectedError, storage_handler)
+    app.add_exception_handler(StorageDeleteError, storage_handler)
+    app.add_exception_handler(ProfileImageUpdateError, profile_image_update_handler)
 
 
 async def user_not_found_handler(request: Request, exc: UserNotFoundError):
@@ -107,8 +111,13 @@ async def incorrect_file_handler(request: Request, exc: IncorrectFileError):
 
 
 async def storage_handler(
-    request: Request, exc: StorageUploadError | StorageNotConnectedError
+    request: Request,
+    exc: StorageUploadError | StorageNotConnectedError | StorageDeleteError,
 ):
     return JSONResponse(
         status_code=503, content={"detail": "Storage service unavailable"}
     )
+
+
+async def profile_image_update_handler(request: Request, exc: ProfileImageUpdateError):
+    return JSONResponse(status_code=500, content={"detail": "DB Error"})

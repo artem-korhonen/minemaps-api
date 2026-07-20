@@ -23,6 +23,8 @@ class User(Base):
         String(16), server_default=UserRole.USER, nullable=False
     )
 
+    profile_image_key: Mapped[str | None] = mapped_column(String(32), nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

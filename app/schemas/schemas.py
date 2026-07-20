@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from fastapi import UploadFile
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -31,6 +32,7 @@ class UserOut(BaseSchema):
     followers_count: int
     following_count: int
     is_following: bool | None = None
+    profile_image_url: str | None
 
 
 class Token(BaseSchema):
@@ -42,12 +44,14 @@ class MapCreate(BaseSchema):
     name: str
     description: str
     is_published: bool
+    main_image: UploadFile | None
 
 
 class MapUpdate(BaseSchema):
     name: str | None = None
     description: str | None = None
     is_published: bool | None = None
+    main_image: UploadFile | None = None
 
 
 class MapOut(BaseSchema):
@@ -56,3 +60,4 @@ class MapOut(BaseSchema):
     created_at: datetime
     updated_at: datetime
     favourites_count: int
+    main_image_key: str | None

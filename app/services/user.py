@@ -11,6 +11,7 @@ from app.errors.user import (
     FollowUserConflictError,
     FollowUserError,
     InvalidCredentialsError,
+    ProfileImageUpdateError,
     UserAlreadyExistsError,
     UserNotFoundError,
 )
@@ -54,6 +55,7 @@ class UserService:
             followers_count=user.followers_count,
             following_count=user.following_count,
             is_following=is_following,
+            profile_image_url=settings.S3_PUBLIC_URL + "/" + user.profile_image_key
         )
 
     async def get_user_model(self, user_id: int) -> User | None:
@@ -118,6 +120,17 @@ class UserService:
         if file.size > settings.MAX_IMAGE_SIZE:
             raise FileTooLargeError()
 
-        await storage.upload_image(file, f"users/{user_id}.webp")
+        key = f"users/{user_id}.webp"
+        await storage.upload_image(file, key)
+
+        try:
+            updated = await self.repository.update_profile_image(user_id, key)
+        except Exception:
+            await storage.delete_image(key)
+            raise ProfileImageUpdateError()
+
+        if not updated:
+            await storage.delete_image(key)
+            raise UserNotFoundError()
 
         return True

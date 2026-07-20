@@ -16,3 +16,7 @@ class StorageUploadError(Exception):
 
 class ConvertImageError(Exception):
     pass
+
+
+class StorageDeleteError(Exception):
+    pass

@@ -20,3 +20,7 @@ class FollowUserError(Exception):
 
 class FollowNotFoundError(Exception):
     pass
+
+
+class ProfileImageUpdateError(Exception):
+    pass

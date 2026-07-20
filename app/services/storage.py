@@ -10,6 +10,7 @@ from types_aiobotocore_s3 import S3Client
 
 from app.errors.storage import (
     ConvertImageError,
+    StorageDeleteError,
     StorageNotConnectedError,
     StorageUploadError,
 )
@@ -40,7 +41,7 @@ class StorageService:
             "aws_access_key_id": access_key,
             "aws_secret_access_key": secret_key,
             "endpoint_url": endpoint_url,
-            "verify": False
+            "verify": False,
         }
 
         self.bucket_name = bucket_name
@@ -60,7 +61,7 @@ class StorageService:
     async def close(self) -> None:
         await self.stack.aclose()
 
-    async def upload_image(self, file: UploadFile, path: str):
+    async def upload_image(self, file: UploadFile, key: str):
         if self.client is None:
             raise StorageNotConnectedError()
 
@@ -68,8 +69,18 @@ class StorageService:
 
         try:
             await self.client.put_object(
-                Bucket=self.bucket_name, Key=path, Body=image, ContentType="image/webp"
+                Bucket=self.bucket_name, Key=key, Body=image, ContentType="image/webp"
             )
         except Exception as exc:
             print(exc)
             raise StorageUploadError()
+
+    async def delete_image(self, key: str):
+        if self.client is None:
+            raise StorageNotConnectedError()
+
+        try:
+            await self.client.delete_object(Bucket=self.bucket_name, Key=key)
+        except Exception as exc:
+            print(exc)
+            raise StorageDeleteError()
